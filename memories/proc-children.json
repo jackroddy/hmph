@@ -1,0 +1,10 @@
+{
+  "slug": "proc-children",
+  "text": "The probe walks the tree through /proc/<pid>/task/<tid>/children, which this kernel has (CONFIG_PROC_CHILDREN). Without it the probe would need a full /proc scan for ppids.",
+  "created_at": "2026-09-28T22:37:37.747964164Z",
+  "updated_at": "2026-09-28T22:37:37.747964164Z",
+  "stamp": {
+    "commit": "fe17f51",
+    "branch": "dev"
+  }
+}

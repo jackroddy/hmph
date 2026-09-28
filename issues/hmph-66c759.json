@@ -13,11 +13,19 @@
   "lease_expires": "2026-09-28T22:41:47.726245232Z",
   "defer_until": null,
   "created_at": "2026-09-28T22:03:17.280898154Z",
-  "updated_at": "2026-09-28T22:26:47.726245232Z",
+  "updated_at": "2026-09-28T22:37:08.419005626Z",
   "closed_at": null,
   "close_reason": null,
   "resolution": null,
-  "notes": [],
+  "notes": [
+    {
+      "at": "2026-09-28T22:37:08.419004866Z",
+      "author": "Jack Roddy/bee2f5ca",
+      "text": "Concurrency uses the sum of live threads' schedstat deltas, ns resolution. The stat utime+stime total (10 ms jiffies, gone threads included) rides along as Row.charged and shows in summary.tbl beside cpu(s), so a thread dying between ticks shows as the gap.",
+      "commit": "fe17f51",
+      "branch": "dev"
+    }
+  ],
   "stamps": {
     "created": {
       "commit": "43877e8",

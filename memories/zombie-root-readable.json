@@ -1,0 +1,10 @@
+{
+  "slug": "zombie-root-readable",
+  "text": "A spawned root that has exited but is not yet reaped keeps /proc/<pid>/stat and task/<tid>/schedstat readable, so sample::run snapshots before wait4 and the root's final cpu is captured. Children are reaped by their parents at once and lose their last interval.",
+  "created_at": "2026-09-28T22:37:37.754933065Z",
+  "updated_at": "2026-09-28T22:37:37.754933065Z",
+  "stamp": {
+    "commit": "fe17f51",
+    "branch": "dev"
+  }
+}

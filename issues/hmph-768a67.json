@@ -13,11 +13,19 @@
   "lease_expires": null,
   "defer_until": null,
   "created_at": "2026-09-28T23:37:11.434381583Z",
-  "updated_at": "2026-09-28T23:37:11.434381583Z",
+  "updated_at": "2026-09-28T23:37:11.453993923Z",
   "closed_at": null,
   "close_reason": null,
   "resolution": null,
-  "notes": [],
+  "notes": [
+    {
+      "at": "2026-09-28T23:37:11.453993183Z",
+      "author": "Jack Roddy/bee2f5ca",
+      "text": "The cpus/time/share table bins each interval by round(cpus). A program that runs at 100-400% seemingly at random lands in bins that say nothing about it. Candidates: cumulative 'at least N cpus' shares, percentiles of cpus over wall, or bins of half a cpu. The sparkline on the screen is the current stopgap.",
+      "commit": "fbc1259",
+      "branch": "dev"
+    }
+  ],
   "stamps": {
     "created": {
       "commit": "fbc1259",

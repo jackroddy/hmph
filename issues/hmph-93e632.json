@@ -13,11 +13,19 @@
   "lease_expires": "2026-09-28T22:41:47.719320925Z",
   "defer_until": null,
   "created_at": "2026-09-28T22:03:17.217654182Z",
-  "updated_at": "2026-09-28T22:26:47.719320925Z",
+  "updated_at": "2026-09-28T22:37:08.411268612Z",
   "closed_at": null,
   "close_reason": null,
   "resolution": null,
-  "notes": [],
+  "notes": [
+    {
+      "at": "2026-09-28T22:37:08.411267932Z",
+      "author": "Jack Roddy/bee2f5ca",
+      "text": "Walks down from the root via /proc/<pid>/task/<tid>/children (present on this kernel) instead of scanning all of /proc for ppids. A plain function behind cfg, no Probe trait: one impl per platform is a cfg'd module, and the trait bought nothing.",
+      "commit": "fe17f51",
+      "branch": "dev"
+    }
+  ],
   "stamps": {
     "created": {
       "commit": "43877e8",

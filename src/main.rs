@@ -9,6 +9,7 @@ mod sample;
 mod summary;
 mod timeline;
 
+use std::io::Write;
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
@@ -43,10 +44,6 @@ struct Common {
     /// Milliseconds between samples
     #[arg(long, default_value_t = 100)]
     interval: u64,
-
-    /// Concurrency at or under which an interval counts as serial
-    #[arg(long, default_value_t = 1.2)]
-    threshold: f64,
 }
 
 #[derive(Args)]
@@ -76,6 +73,8 @@ struct Watch {
     t0: Option<Instant>,
     ticks: Option<Ticks>,
     rows: Vec<Row>,
+    /// One row per interval for the whole tree.
+    all: Vec<Row>,
 }
 
 impl Watch {
@@ -87,8 +86,10 @@ impl Watch {
             return Ok(());
         };
         let rows = timeline::rows(&prev, &snapshot);
-        self.ticks.as_mut().unwrap().block(&rows)?;
+        let all = summary::whole_run(&rows);
+        self.ticks.as_mut().unwrap().block(&all, &rows)?;
         self.rows.extend(rows);
+        self.all.extend(all);
         self.prev = Some(snapshot);
         Ok(())
     }
@@ -105,7 +106,6 @@ fn main() -> Result<()> {
     let mut watch = Watch {
         about: About {
             interval,
-            threshold: common.threshold,
             command: command.as_ref().map(|c| c.join(" ")),
         },
         out: common.out,
@@ -113,6 +113,7 @@ fn main() -> Result<()> {
         t0: None,
         ticks: None,
         rows: Vec::new(),
+        all: Vec::new(),
     };
 
     let exit = match (command, pid) {
@@ -122,8 +123,24 @@ fn main() -> Result<()> {
     };
 
     let t0 = watch.t0.expect("at least one snapshot");
-    let own = summary::per_process(&watch.rows, common.threshold);
-    let tree = summary::per_subtree(&watch.rows, common.threshold);
-    output::write_summary(&watch.out, t0, &watch.about, &exit, &own, &tree)?;
+    let own = summary::per_process(&watch.rows);
+    let run = summary::per_process(&watch.all)
+        .pop()
+        .context("the tree was never seen")?;
+    output::write_tables(&watch.out, t0, &watch.about, &exit, &run, &own)?;
+
+    let mut err = std::io::stderr().lock();
+    output::screen(&mut err, &watch.about, &run, &own, &watch.all)?;
+    if let Some(rusage) = exit.rusage {
+        let seen = run.cpu.as_secs_f64() / rusage.as_secs_f64().max(f64::EPSILON);
+        if seen < 0.9 {
+            writeln!(
+                err,
+                "hmph: saw {:.0}% of the cpu the run used; the rest went to programs that \
+                 lived and died between samples, so try a shorter --interval",
+                100.0 * seen
+            )?;
+        }
+    }
     std::process::exit(exit.code.unwrap_or(0))
 }

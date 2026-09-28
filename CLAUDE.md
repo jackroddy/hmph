@@ -16,9 +16,20 @@ divided by the wall that elapsed. That is an integral, exact for the interval
 however threads came and went inside it. Counting threads in a running state
 at the tick is not the measurement: it aliases against anything periodic.
 
-Serial time is the seconds spent at concurrency near one, and parallel work is
-the concurrency integrated over the rest. The threshold between them is a flag
-with a default, never a constant in the code.
+What hmph reports from the timeline is how many cpus the run used on average,
+how its wall time split by cpu count, and which program was running when and
+how hard.
+
+## Output
+
+The main output, the screen printed when the run ends and the tables it is
+built from, is read by people who know only that they asked for N threads.
+Every number on it must make sense to that reader: cpus used, for how long,
+by which program. Process-accounting distinctions, such as a process's own
+cpu against its subtree's, cpu the kernel charged against cpu the timeline
+saw, or waiting on a child against waiting on a disk, stay inside the code.
+One reaches the output only with a plain-language reason a reader would
+recognise.
 
 ## Layers
 

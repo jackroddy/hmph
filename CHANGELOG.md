@@ -13,15 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   it until it exits, then exits with the command's own status.
 - `hmph attach <pid>` samples a tree that is already running until its root is
   gone.
-- `ticks.tbl`: one row per process per interval, streamed while the tree runs,
-  with concurrency in cpus, live threads and resident size.
-- `summary.tbl`: one row per process with its wall, cpu, serial and parallel
-  time, mean and peak concurrency, and argv.
-- `tree.tbl`: the same figures for each process's subtree, so the root's row is
-  the whole run.
-- `levels.tbl`: wall time at each integer level of concurrency, per process and
-  per subtree.
-- `--interval` (ms, default 100), `--threshold` (cpus, default 1.2) and `--out`
-  (directory, default `.`), recorded in each table's `#=` lines beside the
-  command, the exit status, and the cpu the kernel charged the tree against the
-  cpu the timeline accounted for.
+- A screen on stderr when the run ends: wall, cpu and average cpus for the
+  whole run, a sparkline of cpus over time, how the wall split by number of
+  cpus, and which program ran when and how hard.
+- `ticks.tbl`: one row per program per interval, plus an `all` row for the
+  whole run, streamed while the tree runs.
+- `summary.tbl`: one row per program with when it started, how long it ran,
+  its cpu time, average and peak cpus, its pid and argv.
+- `cpus.tbl`: the run's wall time and share at each number of cpus.
+- `--interval` (ms, default 100) and `--out` (directory, default `.`).

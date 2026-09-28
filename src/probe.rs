@@ -9,14 +9,11 @@ use std::time::{Duration, Instant};
 #[derive(Debug, Clone)]
 pub struct Process {
     pub pid: u32,
-    pub ppid: u32,
     /// The kernel's short name for the process.
     pub name: String,
     pub argv: Vec<String>,
     /// When the process began, on the snapshot's clock.
     pub started: Instant,
-    /// Cpu time the process has consumed, threads already gone included.
-    pub cpu: Duration,
     /// Cpu time each live thread has consumed.
     pub threads: Vec<Thread>,
     /// Resident set size in bytes.
@@ -121,11 +118,9 @@ mod linux {
         let age = uptime.saturating_sub(ticks(stat.start_ticks));
         let process = Process {
             pid,
-            ppid: stat.ppid,
             name: stat.comm,
             argv,
             started: at - age,
-            cpu: ticks(stat.cpu_ticks),
             threads,
             rss: stat.rss_pages * page_size(),
         };
@@ -134,8 +129,6 @@ mod linux {
 
     struct Stat {
         comm: String,
-        ppid: u32,
-        cpu_ticks: u64,
         start_ticks: u64,
         rss_pages: u64,
     }
@@ -151,12 +144,8 @@ mod linux {
         // comm second, so the field after comm is field 3
         let field: Vec<&str> = text[close + 1..].split_whitespace().collect();
         let at = |n: usize| field.get(n - 3);
-        let utime: u64 = at(14)?.parse().ok()?;
-        let stime: u64 = at(15)?.parse().ok()?;
         Some(Stat {
             comm,
-            ppid: at(4)?.parse().ok()?,
-            cpu_ticks: utime + stime,
             start_ticks: at(22)?.parse().ok()?,
             rss_pages: at(24)?.parse().ok()?,
         })
@@ -222,8 +211,6 @@ mod linux {
             let line = "12 (a (b) c) S 7 12 12 0 -1 4194304 88 0 0 0 30 40 0 0 20 0 3 0 1813161 3313664 436 0";
             let s = parse_stat(line).unwrap();
             assert_eq!(s.comm, "a (b) c");
-            assert_eq!(s.ppid, 7);
-            assert_eq!(s.cpu_ticks, 70);
             assert_eq!(s.start_ticks, 1813161);
             assert_eq!(s.rss_pages, 436);
         }

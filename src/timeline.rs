@@ -12,13 +12,10 @@ pub struct Row {
     /// How much of the interval the process was alive for.
     pub wall: Duration,
     pub pid: u32,
-    pub ppid: u32,
     pub name: String,
     pub argv: String,
     /// Cpu time consumed over the interval.
     pub cpu: Duration,
-    /// Cpu time the kernel has charged the process so far, gone threads included.
-    pub charged: Duration,
     pub threads: usize,
     pub rss: u64,
 }
@@ -51,9 +48,18 @@ pub fn rows(prev: &Snapshot, next: &Snapshot) -> Vec<Row> {
             },
             None => {
                 let from = process.started.max(prev.at);
+                let row = first(process, next.at);
+                // the start time is read at 10 ms resolution,
+                // and no thread can consume more cpu than the
+                // wall that passed, so the busiest thread is a
+                // floor on the wall
+                let busiest = process.threads.iter().map(|t| t.cpu).max();
                 Row {
-                    wall: next.at.saturating_duration_since(from),
-                    ..first(process, next.at)
+                    wall: next
+                        .at
+                        .saturating_duration_since(from)
+                        .max(busiest.unwrap_or_default()),
+                    ..row
                 }
             }
         })
@@ -66,11 +72,9 @@ fn first(process: &Process, at: Instant) -> Row {
         at,
         wall: Duration::ZERO,
         pid: process.pid,
-        ppid: process.ppid,
         name: process.name.clone(),
         argv: process.argv.join(" "),
         cpu: process.threads.iter().map(|t| t.cpu).sum(),
-        charged: process.cpu,
         threads: process.threads.len(),
         rss: process.rss,
     }
@@ -105,19 +109,12 @@ pub(crate) mod tests {
     }
 
     /// A process whose threads have consumed the given milliseconds each.
-    pub(crate) fn process(
-        pid: u32,
-        ppid: u32,
-        started: Instant,
-        threads: &[(u32, u64)],
-    ) -> Process {
+    pub(crate) fn process(pid: u32, started: Instant, threads: &[(u32, u64)]) -> Process {
         Process {
             pid,
-            ppid,
             name: format!("p{pid}"),
             argv: vec![],
             started,
-            cpu: threads.iter().map(|&(_, c)| ms(c)).sum(),
             threads: threads
                 .iter()
                 .map(|&(tid, c)| Thread { tid, cpu: ms(c) })
@@ -133,8 +130,8 @@ pub(crate) mod tests {
     #[test]
     fn delta_over_the_interval() {
         let t0 = Instant::now();
-        let prev = snapshot(t0, vec![process(1, 0, t0, &[(1, 10), (2, 50)])]);
-        let next = snapshot(t0 + ms(100), vec![process(1, 0, t0, &[(1, 60), (2, 150)])]);
+        let prev = snapshot(t0, vec![process(1, t0, &[(1, 10), (2, 50)])]);
+        let next = snapshot(t0 + ms(100), vec![process(1, t0, &[(1, 60), (2, 150)])]);
         let rows = rows(&prev, &next);
         assert_eq!(rows.len(), 1);
         assert_eq!(rows[0].wall, ms(100));
@@ -148,7 +145,7 @@ pub(crate) mod tests {
         let t0 = Instant::now();
         let prev = snapshot(t0, vec![]);
         // began 40 ms into a 100 ms interval, ran flat out
-        let next = snapshot(t0 + ms(100), vec![process(2, 1, t0 + ms(60), &[(2, 40)])]);
+        let next = snapshot(t0 + ms(100), vec![process(2, t0 + ms(60), &[(2, 40)])]);
         let rows = rows(&prev, &next);
         assert_eq!(rows[0].wall, ms(40));
         assert!((rows[0].concurrency() - 1.0).abs() < 1e-9);
@@ -158,16 +155,30 @@ pub(crate) mod tests {
     fn new_process_older_than_the_interval_is_clipped_to_it() {
         let t0 = Instant::now();
         let prev = snapshot(t0 + ms(100), vec![]);
-        let next = snapshot(t0 + ms(200), vec![process(2, 1, t0, &[(2, 100)])]);
+        let next = snapshot(t0 + ms(200), vec![process(2, t0, &[(2, 100)])]);
         let rows = rows(&prev, &next);
         assert_eq!(rows[0].wall, ms(100));
     }
 
     #[test]
+    fn new_process_wall_is_at_least_its_busiest_thread() {
+        let t0 = Instant::now();
+        let prev = snapshot(t0, vec![]);
+        // the start time says 20 ms ago, but one thread has 50 ms of cpu
+        let next = snapshot(
+            t0 + ms(100),
+            vec![process(2, t0 + ms(80), &[(2, 50), (3, 10)])],
+        );
+        let rows = rows(&prev, &next);
+        assert_eq!(rows[0].wall, ms(50));
+        assert!((rows[0].concurrency() - 1.2).abs() < 1e-9);
+    }
+
+    #[test]
     fn new_thread_credited_and_gone_thread_lost() {
         let t0 = Instant::now();
-        let prev = snapshot(t0, vec![process(1, 0, t0, &[(1, 10), (2, 500)])]);
-        let next = snapshot(t0 + ms(100), vec![process(1, 0, t0, &[(1, 20), (3, 30)])]);
+        let prev = snapshot(t0, vec![process(1, t0, &[(1, 10), (2, 500)])]);
+        let next = snapshot(t0 + ms(100), vec![process(1, t0, &[(1, 20), (3, 30)])]);
         let rows = rows(&prev, &next);
         assert_eq!(rows[0].cpu, ms(40));
     }
@@ -177,9 +188,9 @@ pub(crate) mod tests {
         let t0 = Instant::now();
         let prev = snapshot(
             t0,
-            vec![process(1, 0, t0, &[(1, 0)]), process(2, 1, t0, &[(2, 0)])],
+            vec![process(1, t0, &[(1, 0)]), process(2, t0, &[(2, 0)])],
         );
-        let next = snapshot(t0 + ms(100), vec![process(1, 0, t0, &[(1, 0)])]);
+        let next = snapshot(t0 + ms(100), vec![process(1, t0, &[(1, 0)])]);
         let rows = rows(&prev, &next);
         assert_eq!(rows.iter().map(|r| r.pid).collect::<Vec<_>>(), [1]);
     }
@@ -188,7 +199,7 @@ pub(crate) mod tests {
     fn zero_wall_is_zero_concurrency() {
         let t0 = Instant::now();
         let prev = snapshot(t0, vec![]);
-        let next = snapshot(t0, vec![process(1, 0, t0, &[(1, 5)])]);
+        let next = snapshot(t0, vec![process(1, t0, &[(1, 0)])]);
         assert_eq!(rows(&prev, &next)[0].concurrency(), 0.0);
     }
 }

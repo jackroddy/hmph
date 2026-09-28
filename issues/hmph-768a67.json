@@ -1,0 +1,28 @@
+{
+  "id": "hmph-768a67",
+  "title": "cpus histogram rounds to whole cpus, which misreads a run that drifts between 1 and 4",
+  "body": "",
+  "type": "task",
+  "status": "open",
+  "priority": 3,
+  "labels": [],
+  "parent": null,
+  "blocked_by": [],
+  "related": [],
+  "assignee": null,
+  "lease_expires": null,
+  "defer_until": null,
+  "created_at": "2026-09-28T23:37:11.434381583Z",
+  "updated_at": "2026-09-28T23:37:11.434381583Z",
+  "closed_at": null,
+  "close_reason": null,
+  "resolution": null,
+  "notes": [],
+  "stamps": {
+    "created": {
+      "commit": "fbc1259",
+      "branch": "dev"
+    },
+    "closed": null
+  }
+}

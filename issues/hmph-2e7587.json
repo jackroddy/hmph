@@ -1,0 +1,30 @@
+{
+  "id": "hmph-2e7587",
+  "title": "sample: spawn or attach, tick at an interval, keep stamped snapshots",
+  "body": "run spawns the command as a child so tick zero is its start and its exit is exact, and reads wait4 rusage for the whole tree at the end. attach takes a pid and stops when it is gone. Each snapshot is stamped with an Instant. The interval is a flag with a default of 100 ms; the probe over 48 threads is well under a millisecond, so the cost is the parse.",
+  "type": "task",
+  "status": "open",
+  "priority": 1,
+  "labels": [],
+  "parent": "hmph-718196",
+  "blocked_by": [
+    "hmph-93e632"
+  ],
+  "related": [],
+  "assignee": null,
+  "lease_expires": null,
+  "defer_until": null,
+  "created_at": "2026-09-28T22:03:17.24812616Z",
+  "updated_at": "2026-09-28T22:03:17.24812616Z",
+  "closed_at": null,
+  "close_reason": null,
+  "resolution": null,
+  "notes": [],
+  "stamps": {
+    "created": {
+      "commit": "43877e8",
+      "branch": "dev"
+    },
+    "closed": null
+  }
+}

@@ -3,7 +3,7 @@
   "title": "summary: integrate the timeline per process and per subtree",
   "body": "Pure. Per process and per subtree: wall alive, cpu total, mean and max concurrency, seconds at concurrency at or under the serial threshold (a flag, default near 1.2, never a constant), parallel work above it, and a histogram of seconds at each integer level. For a spawned root, the cpu the tree accounted for beside what wait4 rusage says the tree spent, so children that lived and died between ticks show as a number.",
   "type": "task",
-  "status": "open",
+  "status": "closed",
   "priority": 1,
   "labels": [],
   "parent": "hmph-718196",
@@ -15,10 +15,10 @@
   "lease_expires": null,
   "defer_until": null,
   "created_at": "2026-09-28T22:03:17.308594226Z",
-  "updated_at": "2026-09-28T22:37:08.426468489Z",
-  "closed_at": null,
-  "close_reason": null,
-  "resolution": null,
+  "updated_at": "2026-09-28T22:37:37.71992039Z",
+  "closed_at": "2026-09-28T22:37:37.71992039Z",
+  "close_reason": "src/summary.rs: per_process and per_subtree, serial/parallel split at --threshold, levels histogram",
+  "resolution": "done",
   "notes": [
     {
       "at": "2026-09-28T22:37:08.426467579Z",
@@ -33,6 +33,9 @@
       "commit": "43877e8",
       "branch": "dev"
     },
-    "closed": null
+    "closed": {
+      "commit": "fe17f51",
+      "branch": "dev"
+    }
   }
 }

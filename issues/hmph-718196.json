@@ -3,7 +3,7 @@
   "title": "first working hmph: run a command, write ticks.tbl and summary.tbl",
   "body": "The layers in CLAUDE.md, each a child. Done when hmph run -- <cmd> writes a timeline and a summary for a multi-threaded command with children, and the summary's cpu total reconciles against the root's rusage.",
   "type": "milestone",
-  "status": "open",
+  "status": "closed",
   "priority": 1,
   "labels": [],
   "parent": null,
@@ -13,16 +13,19 @@
   "lease_expires": null,
   "defer_until": null,
   "created_at": "2026-09-28T22:03:17.187833977Z",
-  "updated_at": "2026-09-28T22:03:17.187833977Z",
-  "closed_at": null,
-  "close_reason": null,
-  "resolution": null,
+  "updated_at": "2026-09-28T22:37:37.741034873Z",
+  "closed_at": "2026-09-28T22:37:37.741034873Z",
+  "close_reason": "hmph run -- ./work.sh (sh loops around xz -T4) writes all four tables; accounted cpu came within 0.01-0.4 s of rusage, the gap being the last interval of each process that died between ticks",
+  "resolution": "done",
   "notes": [],
   "stamps": {
     "created": {
       "commit": "43877e8",
       "branch": "dev"
     },
-    "closed": null
+    "closed": {
+      "commit": "fe17f51",
+      "branch": "dev"
+    }
   }
 }

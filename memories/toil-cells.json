@@ -1,0 +1,10 @@
+{
+  "slug": "toil-cells",
+  "text": "toil 0.3 has no duration or bytes cell kinds: units go in the column label (wall(s), rss(MiB)) and precision comes from Column::fixed. Stream never flushes, so ticks.tbl streams through a bare File so each tick lands as it is written.",
+  "created_at": "2026-09-28T22:37:37.761821936Z",
+  "updated_at": "2026-09-28T22:37:37.761821936Z",
+  "stamp": {
+    "commit": "fe17f51",
+    "branch": "dev"
+  }
+}

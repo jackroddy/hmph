@@ -13,11 +13,19 @@
   "lease_expires": null,
   "defer_until": null,
   "created_at": "2026-09-28T22:03:17.187833977Z",
-  "updated_at": "2026-09-28T22:37:37.741034873Z",
+  "updated_at": "2026-09-28T23:40:07.437478534Z",
   "closed_at": "2026-09-28T22:37:37.741034873Z",
   "close_reason": "hmph run -- ./work.sh (sh loops around xz -T4) writes all four tables; accounted cpu came within 0.01-0.4 s of rusage, the gap being the last interval of each process that died between ticks",
   "resolution": "done",
-  "notes": [],
+  "notes": [
+    {
+      "at": "2026-09-28T23:40:07.437478044Z",
+      "author": "Jack Roddy/bee2f5ca",
+      "text": "Output reworked after the nail run: one screen on stderr plus summary.tbl, cpus.tbl and ticks.tbl. The serial/parallel/tree/levels view is gone; the rule is in CLAUDE.md under Output.",
+      "commit": "0112b4b",
+      "branch": "dev"
+    }
+  ],
   "stamps": {
     "created": {
       "commit": "43877e8",

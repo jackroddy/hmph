@@ -1,0 +1,30 @@
+{
+  "id": "hmph-dd2b3b",
+  "title": "attach mode: watch a process hmph did not spawn",
+  "body": "No rusage at the end and no exact start; the summary says so. Useful for watching someone else's run on a shared box.",
+  "type": "task",
+  "status": "open",
+  "priority": 3,
+  "labels": [],
+  "parent": null,
+  "blocked_by": [
+    "hmph-2e7587"
+  ],
+  "related": [],
+  "assignee": null,
+  "lease_expires": null,
+  "defer_until": null,
+  "created_at": "2026-09-28T22:03:17.40030414Z",
+  "updated_at": "2026-09-28T22:03:17.40030414Z",
+  "closed_at": null,
+  "close_reason": null,
+  "resolution": null,
+  "notes": [],
+  "stamps": {
+    "created": {
+      "commit": "43877e8",
+      "branch": "dev"
+    },
+    "closed": null
+  }
+}

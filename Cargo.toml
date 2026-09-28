@@ -13,3 +13,4 @@ exclude = ["CLAUDE.md"]
 anyhow = "1"
 clap = { version = "4", features = ["derive"] }
 toil = "0.3"
+libc = "0.2"

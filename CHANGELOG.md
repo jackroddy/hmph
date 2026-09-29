@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-28
+
 ### Added
 
 - `hmph run -- <command>` spawns a command and samples the process tree under
@@ -22,3 +24,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   its cpu time, average and peak cpus, its pid and argv.
 - `cpus.tbl`: the run's wall time and share at each number of cpus.
 - `--interval` (ms, default 100) and `--out` (directory, default `.`).
+
+[Unreleased]: https://github.com/jackroddy/hmph/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/jackroddy/hmph/releases/tag/v0.1.0
